@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """A complex types-annotated function mixed_list"""
 from typing import List, Union
 

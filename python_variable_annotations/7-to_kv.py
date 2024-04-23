@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """A complex types-annotated to transfer string and int/float to tuple"""
 from typing import Tuple, Union
 
