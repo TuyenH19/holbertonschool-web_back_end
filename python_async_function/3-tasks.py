@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 """Function task_wait_random that takes an integer max_delay and returns a asyncio.Task."""
 import asyncio
-from typing import Callable
-
-
-# Import module wait_n
+# Import module wait_random
 wait_random = __import__('0-basic_async_syntax').wait_random
 
 
