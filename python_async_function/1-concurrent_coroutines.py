@@ -10,7 +10,6 @@ from functools import partial
 async def wait_random(max_delay: int) -> float:
     """Asynchronous coroutine that waits for a random delay
     between 0 and max_delay seconds (inclusive)."""
-
     delay = uniform(0, max_delay)
     await asyncio.sleep(delay)
     return delay
