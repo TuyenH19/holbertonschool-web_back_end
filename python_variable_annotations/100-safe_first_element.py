@@ -8,10 +8,11 @@ Augment the following code with the correct duck-typed annotations:
         else:
             return None
 """
-from typing import Sequence, Any, Optional
+
+from typing import Sequence, Any, Union
 
 
-def safe_first_element(lst: Sequence[Any]) -> Optional[Any]:
+def safe_first_element(lst: Sequence[Any]) -> Union[Any, None]:
     """ Duck typing - first element of a sequence """
     if lst:
         return lst[0]
