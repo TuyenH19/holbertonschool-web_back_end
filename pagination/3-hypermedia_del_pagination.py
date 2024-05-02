@@ -46,7 +46,7 @@ class Server:
 
         data = []
         next_index = index + page_size
-        
+
         for i in range(index, next_index):
             if self.indexed_dataset().get(i):
                 data.append(self.indexed_dataset()[i])
