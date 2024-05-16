@@ -1,3 +1,8 @@
 __pycache__
 *main.py
-*node_modules*
+*main*
+*node_modules/
+*.eslintrc*
+*babel*
+*package*
+*utils*
