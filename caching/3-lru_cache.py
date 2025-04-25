@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-  LIFO Caching
+  LRU Caching
 """
 import sys
 from base_caching import BaseCaching
