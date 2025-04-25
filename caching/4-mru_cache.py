@@ -23,8 +23,8 @@ class MRUCache(BaseCaching):
             return
 
         # If the cache is full and the key is not already in the cache
-        if key not in self.cache_data
-        and len(self.cache_data) >= BaseCaching.MAX_ITEMS:
+        if (key not in self.cache_data
+            and len(self.cache_data) >= BaseCaching.MAX_ITEMS):
             # Remove the most recently used key
             mru_key = self.order.pop()  # Remove the last item
             del self.cache_data[mru_key]
