@@ -7,7 +7,8 @@ from base_caching import BaseCaching
 
 
 class LIFOCache(BaseCaching):
-    """LIFO caching system that removes the latest item when the cache limit is reached"""
+    """LIFO caching system that removes
+    the latest item when the cache limit is reached"""
 
     def __init__(self):
         """Initialize the LIFO cache"""
@@ -21,7 +22,10 @@ class LIFOCache(BaseCaching):
         if key is None or item is None:
             return
 
-        if key not in self.cache_data and len(self.cache_data) >= BaseCaching.MAX_ITEMS:
+        if (
+          key not in self.cache_data
+          and len(self.cache_data) >= BaseCaching.MAX_ITEMS
+        ):
             # Remove the latest key
             latest_key = self.order.pop()
             del self.cache_data[latest_key]
