@@ -7,7 +7,8 @@ from base_caching import BaseCaching
 
 
 class LRUCache(BaseCaching):
-    """LRU caching system that removes the least recently used item when the cache limit is reached"""
+    """LRU caching system that removes the least
+    recently used item when the cache limit is reached"""
 
     def __init__(self):
         """Initialize the LRU cache"""
@@ -21,7 +22,10 @@ class LRUCache(BaseCaching):
         if key is None or item is None:
             return
 
-        if key not in self.cache_data and len(self.cache_data) >= BaseCaching.MAX_ITEMS:
+        if (
+            key not in self.cache_data
+            and len(self.cache_data) >= BaseCaching.MAX_ITEMS
+        ):
             # Remove the least recently used key
             lru_key = self.order.pop(0)
             del self.cache_data[lru_key]
