@@ -13,7 +13,7 @@ class LRUCache(BaseCaching):
     def __init__(self):
         """Initialize the LRU cache"""
         super().__init__()  # Call the parent init
-        self.order = []  # List to track usage order
+        self.key_order = []  # List to track usage order
 
     def put(self, key, item):
         """Add an item to the cache
@@ -22,21 +22,17 @@ class LRUCache(BaseCaching):
         if key is None or item is None:
             return
 
-        if (
-            key not in self.cache_data
-            and len(self.cache_data) >= BaseCaching.MAX_ITEMS
-        ):
+        # If key already exists, remove it to re-insert at the end
+        if key in self.cache_data:
+            self.key_order.remove(key)
+        self.cache_data[key] = item
+        self.key_order.append(key)
+
+        if len(self.cache_data) > BaseCaching.MAX_ITEMS:
             # Remove the least recently used key
-            lru_key = self.order.pop(0)
+            lru_key = self.key_order.pop(0)
             del self.cache_data[lru_key]
             print(f"DISCARD: {lru_key}")
-
-        # If key already exists, remove it to re-insert at the end
-        if key in self.order:
-            self.order.remove(key)
-
-        self.cache_data[key] = item
-        self.order.append(key)
 
     def get(self, key):
         """
@@ -44,15 +40,10 @@ class LRUCache(BaseCaching):
         Move the accessed item to the end to mark it as recently used.
         Return None if key is not found.
         """
-        if key in self.cache_data:
-            # Move the accessed key to the end to mark it as recently used
-            self.order.remove(key)
-            self.order.append(key)
-            return self.cache_data.get(key)
-        return None
+        if key is None or key not in self.cache_data:
+            return None
 
-    def print_cache(self):
-        """Print the current cache state"""
-        print("Current cache:")
-        for key in self.order:
-            print(f"{key}: {self.cache_data[key]}")
+        # Move the accessed key to the end to mark it as recently used
+        self.key_order.remove(key)
+        self.key_order.append(key)
+        return self.cache_data.get(key)
