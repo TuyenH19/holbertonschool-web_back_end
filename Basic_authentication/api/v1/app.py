@@ -13,6 +13,33 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
+# Initialize auth after CORS  
+auth = None
+
+# Load Auth dynamically from AUTH_TYPE
+if os.getenv('AUTH_TYPE') == 'auth':
+    from api.v1.auth.auth import Auth
+    auth = Auth()
+
+
+@app.before_request
+def before_request_func():
+    """Execute before every request to check authentication"""
+
+    if auth is None:
+        return
+
+    excluded = ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
+    
+    if not auth.require_auth(request.path, excluded):
+        return
+
+    if auth.authorization_header(request) is None:
+        abort(401)
+
+    if auth.current_user(request) is None:
+        abort(403)
+
 
 @app.errorhandler(404)
 def not_found(error) -> str:
@@ -23,24 +50,12 @@ def not_found(error) -> str:
 @app.errorhandler(401)
 def unauthorized(error) -> str:
     """unauthorized error handler
-
-    Args:
-        error ([type]): [description]
-
-    Returns:
-        str: [description]
     """
     return jsonify({"error": "Unauthorized"}), 401
 
 @app.errorhandler(403)
 def forbidden(error) -> str:
     """Handle a forbidden resource
-
-        Args:
-            error: Error catch
-
-        Return:
-            Info of the error
     """
     return jsonify({"error": "Forbidden"}), 403
 
