@@ -91,4 +91,3 @@ class BasicAuth(Auth):
         user = self.user_object_from_credentials(
             credentials[0], credentials[1])
         return user
-      
