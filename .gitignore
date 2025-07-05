@@ -1,6 +1,4 @@
 __pycache__
-*main.py
-*main.js
 *node_modules/
 *.eslintrc*
 *babel*
