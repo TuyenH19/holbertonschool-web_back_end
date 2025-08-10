@@ -37,3 +37,20 @@ class Auth:
             hashed = _hash_password(password)  # bytes
             # Our model stores hashed_password as String, so decode to str
             return self._db.add_user(email, hashed.decode("utf-8"))
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """Validate credentials for a user."""
+        try:
+            user = self._db.find_user_by(email=email)
+        except NoResultFound:
+            return False
+
+        # stored hash is a str (from earlier tasks), bcrypt needs bytes
+        stored_hash = (user.hashed_password or "").encode("utf-8")
+        plain = password.encode("utf-8")
+
+        try:
+            return bcrypt.checkpw(plain, stored_hash)
+        except ValueError:
+            # if stored_hash is malformed for any reason
+            return False
