@@ -81,3 +81,15 @@ class Auth:
             return self._db.find_user_by(session_id=session_id)
         except NoResultFound:
             return None
+
+    def destroy_session(self, user_id: int) -> None:
+        """Invalidate the user's session by clearing session_id."""
+        if user_id is None:
+            return None
+        try:
+            # Only use public DB methods
+            self._db.update_user(user_id, session_id=None)
+        except ValueError:
+            # User not found or invalid field — do nothing per spec
+            pass
+        return None
