@@ -104,3 +104,23 @@ class Auth:
         token = _generate_uuid()
         self._db.update_user(user.id, reset_token=token)
         return token
+
+    def update_password(self, reset_token: str, password: str) -> None:
+        """
+        Update a user's password using a valid reset_token.
+        - If reset_token is unknown, raise ValueError.
+        - If not, hash new password, update user, and clear reset_token.
+        """
+        if not reset_token:
+            raise ValueError("Invalid reset token")
+
+        try:
+            user = self._db.find_user_by(reset_token=reset_token)
+        except NoResultFound:
+            raise ValueError("Invalid reset token")
+
+        new_hash = _hash_password(password)  # bytes
+        # Our model stores hashed_password as String, so decode to str
+        self._db.update_user(user.id, hashed_password=new_hash.decode("utf-8"),
+                             reset_token=None)
+        return None
