@@ -60,3 +60,15 @@ class Auth:
         except ValueError:
             # if stored_hash is malformed for any reason
             return False
+
+    def create_session(self, email: str) -> Optional[str]:
+        """Create a session for the user and return the session id;
+        None if user not found."""
+        try:
+            user = self._db.find_user_by(email=email)
+        except NoResultFound:
+            return None
+
+        session_id = _generate_uuid()
+        self._db.update_user(user.id, session_id=session_id)
+        return session_id
