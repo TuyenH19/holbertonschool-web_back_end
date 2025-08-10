@@ -4,6 +4,7 @@
 from typing import Optional
 import bcrypt
 from sqlalchemy.orm.exc import NoResultFound
+from uuid import uuid4
 
 from db import DB
 from user import User
@@ -54,3 +55,7 @@ class Auth:
         except ValueError:
             # if stored_hash is malformed for any reason
             return False
+
+    def _generate_uuid() -> str:
+        """Return a new UUID as a string (module-private helper)."""
+        return str(uuid4())
