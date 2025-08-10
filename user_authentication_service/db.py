@@ -59,3 +59,26 @@ class DB:
             raise NoResultFound
 
         return user
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """
+        Update a user’s attributes and commit.
+        Raises:
+            ValueError: if user not found or if any field is invalid.
+        """
+        # Find the user; convert "not found" into ValueError as per spec
+        try:
+            user = self.find_user_by(id=user_id)
+        except NoResultFound:
+            raise ValueError("User not found")
+
+        # Validate fields before mutating
+        for field in kwargs.keys():
+            if not hasattr(User, field):
+                raise ValueError(f"Invalid field: {field}")
+
+        # Apply updates
+        for field, value in kwargs.items():
+            setattr(user, field, value)
+
+        self._session.commit()
