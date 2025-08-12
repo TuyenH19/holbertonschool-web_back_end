@@ -4,7 +4,23 @@ Redis basic
 """
 import uuid
 import redis
+from functools import wraps
 from typing import Callable, Optional, TypeVar, Union, Any
+
+
+def count_calls(method: Callable) -> Callable:
+    """
+    Decorator that counts how many times `method` is called, using Redis INCR.
+    Uses the wrapper's qualified name so it matches what callers read via
+    `cache.store.__qualname__`.
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        # self is the Cache instance; bump the counter in Redis
+        key = wrapper.__qualname__  # robust: matches cache.store.__qualname__
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class Cache:
@@ -17,6 +33,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data):
         """
         Generate a random key and store input in Redis.
@@ -35,7 +52,8 @@ class Cache:
         fn: Optional[Callable[[bytes], Any]] = None,
     ) -> Optional[Any]:
         """
-        Retrieve a value by key. If `fn` is provided, convert the raw bytes with it.
+        Retrieve a value by key.
+        If `fn` is provided, convert the raw bytes with it.
         Preserve Redis behavior: return None if key doesn't exist.
         """
         data = self._redis.get(key)
