@@ -4,7 +4,7 @@ Redis basic
 """
 import uuid
 import redis
-from typing import Callable, Optional, TypeVar, Union
+from typing import Callable, Optional, TypeVar, Union, Any
 
 
 class Cache:
@@ -32,20 +32,11 @@ class Cache:
     def get(
         self,
         key: str,
-        fn: Optional[Callable[[bytes], T]] = None,
-    ) -> Optional[Union[bytes, T]]:
+        fn: Optional[Callable[[bytes], Any]] = None,
+    ) -> Optional[Any]:
         """
-        Retrieve a value by key. If `fn` is provided, use it to convert the
-        raw bytes to a desired type. Preserve Redis behavior: return None
-        if the key does not exist.
-
-        Args:
-            key: Redis key to fetch.
-            fn: Optional converter that accepts bytes and returns T.
-
-        Returns:
-            bytes if no converter is given; otherwise T. Returns None if
-            the key doesn't exist.
+        Retrieve a value by key. If `fn` is provided, convert the raw bytes with it.
+        Preserve Redis behavior: return None if key doesn't exist.
         """
         data = self._redis.get(key)
         if data is None:
