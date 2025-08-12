@@ -23,6 +23,29 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
+def call_history(method: Callable) -> Callable:
+    """
+    Store call history for a method:
+    - inputs in "<qualname>:inputs"
+    - outputs in "<qualname>:outputs"
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        base = method.__qualname__
+        in_key = f"{base}:inputs"
+        out_key = f"{base}:outputs"
+
+        # Normalize inputs to a Redis-storable type
+        self._redis.rpush(in_key, str(args))  # ignore kwargs per spec
+
+        result = method(self, *args, **kwargs)
+
+        # Store output (Redis will handle str/bytes/int/float)
+        self._redis.rpush(out_key, result)
+        return result
+    return wrapper
+
+
 class Cache:
     """Simple Redis cache class"""
 
