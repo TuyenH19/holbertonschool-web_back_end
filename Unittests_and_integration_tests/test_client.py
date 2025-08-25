@@ -7,7 +7,6 @@ import unittest
 from unittest.mock import patch, PropertyMock, Mock
 from parameterized import parameterized
 from client import GithubOrgClient
-from fixtures import TEST_PAYLOAD
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -62,3 +61,15 @@ class TestGithubOrgClient(unittest.TestCase):
             self.assertEqual(result, ["repo1", "repo2", "repo3"])
             mock_url.assert_called_once()
             mock_get_json.assert_called_once_with(mock_url.return_value)
+
+    @parameterized.expand([
+        # repo has the correct license -> True
+        ({"license": {"key": "my_license"}}, "my_license", True),
+        # repo license is different -> False
+        ({"license": {"key": "other_license"}}, "my_license", False),
+    ])
+    def test_has_license(self, repo, license_key, expected):
+        """has_license returns True only if
+        repo['license']['key'] == license_key."""
+        self.assertEqual(GithubOrgClient.has_license
+                         (repo, license_key), expected)
