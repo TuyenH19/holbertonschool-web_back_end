@@ -93,7 +93,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
     def setUpClass(self):
         """Start patcher for requests.get and configure its side_effect."""
         # Patch requests.get where it’s imported (in utils)
-        self.get_patcher = patch("utils.requests.get")
+        self.get_patcher = patch("requests.get")
         self.mock_get = self.get_patcher.start()
 
         # Define mock responses based on URL
