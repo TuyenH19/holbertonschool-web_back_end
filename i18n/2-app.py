@@ -14,12 +14,16 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Initialize Babel
-babel = Babel(app)
+babel = Babel()
 
 
 def get_locale():
     """Determine the best match with our supported languages."""
     return request.accept_languages.best_match(app.config['LANGUAGES'])
+
+
+# Initialize Babel with our custom locale selector
+babel.init_app(app, locale_selector=get_locale)
 
 
 @app.route('/')
