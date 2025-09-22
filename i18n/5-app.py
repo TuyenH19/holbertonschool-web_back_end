@@ -2,6 +2,10 @@
 """
 Basic Flask + Flask-Babel app demonstrating mock login and locale selection.
 """
+from __future__ import annotations
+
+from typing import Dict, Optional
+
 from flask import Flask, render_template, request, g
 from flask_babel import Babel, gettext as _
 
@@ -12,23 +16,22 @@ class Config:
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
+    BABEL_TRANSLATION_DIRECTORIES = "translations"
 
 
 app.config.from_object(Config)
 
-babel = Babel(app)
-
 # --- Mocked users table (acts like a DB) ---
-users = {
-  1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
-  2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
-  3: {"name": "Spock", "locale": "kg", "timezone": "Vulcan"},
-  4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
+users: Dict[int, Dict[str, Optional[str]]] = {
+    1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
+    2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
+    3: {"name": "Spock", "locale": "kg", "timezone": "Vulcan"},
+    4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
 
 # --- Helper: get current user from ?login_as=<id> ---
-def get_user():
+def get_user() -> Optional[Dict[str, Optional[str]]]:
     """Return a user dict or None if not found / not provided."""
     login_as = request.args.get("login_as")
     if not login_as:
