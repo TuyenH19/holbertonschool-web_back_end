@@ -1,7 +1,7 @@
 # Personal data
 
 ## Resources
-* What Is PII, non-PII, and Personal Data?
+* What Is PII, non-PII, and Personal Data?(https://piwik.pro/blog/what-is-pii-personal-data/)
 * logging documentation
 * bcrypt package
 * Logging to Files, Setting Levels, and Formatting
