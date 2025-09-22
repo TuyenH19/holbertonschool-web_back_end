@@ -34,22 +34,26 @@ def get_user():
     if not login_as:
         return None
     try:
-        return users.get(int(login_as))
+        user_id = int(login_as)
     except (TypeError, ValueError):
         return None
+    return users.get(user_id)
 
 
 # --- Run before every request: attach user to flask.g ---
 @app.before_request
-def before_request():
+def before_request() -> None:
+    """Set g.user to the current user, if any."""
     g.user = get_user()
 
 
 # --- Locale selection: prefer user's locale if valid, else best match ---
-def get_locale():
+def get_locale() -> str:
+    """Determine the best match with our supported languages."""
     user = getattr(g, "user", None)
     if user and user.get("locale") in app.config["LANGUAGES"]:
         return user["locale"]
+
     req_locale = request.args.get("locale")
     if req_locale in app.config["LANGUAGES"]:
         return req_locale
@@ -62,4 +66,5 @@ babel = Babel(app, locale_selector=get_locale)
 
 @app.route("/")
 def index():
+    """Render the index page."""
     return render_template("5-index.html")
