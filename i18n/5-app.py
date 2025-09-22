@@ -53,14 +53,18 @@ def before_request() -> None:
 # --- Locale selection: prefer user's locale if valid, else best match ---
 def get_locale() -> str:
     """Determine the best match with our supported languages."""
+    req_locale = request.args.get("locale")
+    if req_locale in app.config["LANGUAGES"]:
+        return req_locale
+
     user = getattr(g, "user", None)
     if user and user.get("locale") in app.config["LANGUAGES"]:
         return user["locale"]
 
-    req_locale = request.args.get("locale")
-    if req_locale in app.config["LANGUAGES"]:
-        return req_locale
-    return request.accept_languages.best_match(app.config["LANGUAGES"]) or "en"
+    return (
+      request.accept_languages.best_match(app.config["LANGUAGES"])
+      or app.config["BABEL_DEFAULT_LOCALE"]
+    )
 
 
 # NEW: pass selector into Babel()
