@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mock Login + i18n</title>
+</head>
+<body>
+  <h1>{{_('hello_world')}}</h1>
+
+  {% if g.user %}
+    <p>{{ _('logged_in_as', username=g.user['name']) }}</p>
+  {% else %}
+    <p>{{ _('not_logged_in') }}</p>
+  {% endif %}
+</body>
+</html>
