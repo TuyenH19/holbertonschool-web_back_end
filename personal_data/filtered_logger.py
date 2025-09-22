@@ -20,5 +20,6 @@ def filter_datum(fields, redaction, message, separator):
     Returns:
         The obfuscated log message
     """
-    pattern = f"({'|'.join(fields)})=([^{re.escape(separator)}]*)"
-    return re.sub(pattern, rf"\1={redaction}", message)
+    fld = "|".join(map(re.escape, fields))
+    sep = re.escape(separator)
+    return re.sub(rf'({fld})=[^{sep}]*', r'\1=' + redaction, message)
