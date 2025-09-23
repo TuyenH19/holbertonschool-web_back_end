@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 """
-Utilities for redacting personally identifiable information (PII) from logs.
+Utilities for redacting personally identifiable information (PII) from logs
+and connecting to a secured MySQL database using environment variables.
 
 Exposes:
 - filter_datum: single-regex helper to obfuscate field values in messages.
 - RedactingFormatter: logging.Formatter that applies filter_datum.
 - PII_FIELDS: tuple of key PII field names to redact.
 - get_logger: configured Logger named "user_data".
+- get_db: returns a MySQLConnection using env-provided credentials.
 """
 import logging
 import re
+import os
 from typing import List, Tuple
+
+import mysql.connector
+from mysql.connector.connection import MySQLConnection
 
 # Five “important” PII fields present in user_data.csv
 PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
@@ -61,3 +67,29 @@ def get_logger() -> logging.Logger:
         logger.addHandler(handler)
 
     return logger
+
+
+def get_db() -> MySQLConnection:
+    """
+    Create and return a MySQL database connector using environment variables.
+
+    Environment variables:
+        PERSONAL_DATA_DB_USERNAME (default: "root")
+        PERSONAL_DATA_DB_PASSWORD (default: "")
+        PERSONAL_DATA_DB_HOST     (default: "localhost")
+        PERSONAL_DATA_DB_NAME     (no default; must be set)
+
+    Returns:
+        mysql.connector.connection.MySQLConnection: an open DB connection.
+    """
+    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    database = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    return mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=database,
+    )
