@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 """
 Utilities for redacting personally identifiable information (PII) from logs
-and connecting to a secured MySQL database using environment variables.
-
-Exposes:
-- filter_datum: single-regex helper to obfuscate field values in messages.
-- RedactingFormatter: logging.Formatter that applies filter_datum.
-- PII_FIELDS: tuple of key PII field names to redact.
-- get_logger: configured Logger named "user_data".
-- get_db: returns a MySQLConnection using env-provided credentials.
+and connecting to a secured MySQL database using environment variables, and
+emitting redacted rows from the `users` table.
 """
 import logging
 import re
@@ -93,3 +87,40 @@ def get_db() -> MySQLConnection:
         host=host,
         database=database,
     )
+
+
+def main() -> None:
+    """
+    Connect to the DB and print all users with PII fields redacted.
+
+    Output format (handled by the logger's formatter):
+    [HOLBERTON] user_data INFO YYYY-mm-dd HH:MM:SS,ms: name=***; email=***; ...
+    """
+    db = get_db()
+    cursor = db.cursor()
+    logger = get_logger()
+
+    try:
+        query = (
+            "SELECT name, email, phone, ssn, password, ip, "
+            "last_login, user_agent FROM users;"
+        )
+        cursor.execute(query)
+
+        for (
+            name, email, phone, ssn, password,
+            ip, last_login, user_agent
+        ) in cursor:
+            message = (
+                f"name={name}; email={email}; phone={phone}; ssn={ssn}; "
+                f"password={password}; ip={ip}; last_login={last_login}; "
+                f"user_agent={user_agent};"
+            )
+            logger.info(message)
+    finally:
+        cursor.close()
+        db.close()
+
+
+if __name__ == "__main__":
+    main()
