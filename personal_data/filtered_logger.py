@@ -1,10 +1,19 @@
 #!/usr/bin/env python3
 """
-Module for filtering and obfuscating log data
+Utilities for redacting personally identifiable information (PII) from logs.
+
+Exposes:
+- filter_datum: single-regex helper to obfuscate field values in messages.
+- RedactingFormatter: logging.Formatter that applies filter_datum.
+- PII_FIELDS: tuple of key PII field names to redact.
+- get_logger: configured Logger named "user_data".
 """
 import logging
 import re
-from typing import List
+from typing import List, Tuple
+
+# Five “important” PII fields present in user_data.csv
+PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -31,3 +40,24 @@ class RedactingFormatter(logging.Formatter):
         """Format the log record, redacting specified fields"""
         return filter_datum(self.fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
+
+
+def get_logger() -> logging.Logger:
+    """
+    Create and return a configured logger named 'user_data'.
+
+    - Level: INFO (do not emit DEBUG)
+    - No propagation to ancestor loggers
+    - StreamHandler with RedactingFormatter using PII_FIELDS
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    # Avoid duplicate handlers if called multiple times
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
+        logger.addHandler(handler)
+
+    return logger
