@@ -17,7 +17,7 @@ def count_calls(method: Callable) -> Callable:
     @wraps(method)
     def wrapper(self, *args, **kwargs):
         # self is the Cache instance; bump the counter in Redis
-        key = method.__qualname__  # robust: matches cache.store.__qualname__
+        key = method.__qualname__
         self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
