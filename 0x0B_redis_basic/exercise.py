@@ -51,11 +51,11 @@ def replay(method: Callable):
 
     count_calls = method.__self__._redis.get(key)
     if count_calls is None:
-        print(f"Cache.store was called 0 times.")
+        print(f"{key} was called 0 times.")
         return
 
     count_calls = int(count_calls)
-    print(f"Cache.store {key} was called {count_calls} times:")
+    print(f"{key} was called {count_calls} times:")
 
     inputs = method.__self__._redis.lrange(f"{key}:inputs", 0, -1)
     outputs = method.__self__._redis.lrange(f"{key}:outputs", 0, -1)
