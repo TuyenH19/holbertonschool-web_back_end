@@ -16,7 +16,6 @@ def count_calls(method: Callable) -> Callable:
     """
     @wraps(method)
     def wrapper(self, *args, **kwargs):
-        # self is the Cache instance; bump the counter in Redis
         key = method.__qualname__
         self._redis.incr(key)
         return method(self, *args, **kwargs)
@@ -35,12 +34,10 @@ def call_history(method: Callable) -> Callable:
         in_key = f"{base}:inputs"
         out_key = f"{base}:outputs"
 
-        # Normalize inputs to a Redis-storable type
-        self._redis.rpush(in_key, str(args))  # ignore kwargs per spec
+        self._redis.rpush(in_key, str(args))
 
         result = method(self, *args, **kwargs)
 
-        # Store output (Redis will handle str/bytes/int/float)
         self._redis.rpush(out_key, result)
         return result
     return wrapper
