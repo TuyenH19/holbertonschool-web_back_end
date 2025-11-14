@@ -30,3 +30,18 @@ python -m unittest path/to/test_file.py
 * All of the functions (inside and outside a class) should have a documentation (python3 -c 'print(__import__("my_module").my_function.__doc__)' and python3 -c 'print(__import__("my_module").MyClass.my_function.__doc__)')
 * A documentation is not a simple word, it’s a real sentence explaining what’s the purpose of the module, class or method (the length of it will be verified)
 * All of the functions and coroutines must be type-annotated.
+
+** Command to test files
+```
+python3 -m unittest -v test_client.TestGithubOrgClient.test_org_0_google
+
+* Run all test file:
+python -m unittest test_client.py
+
+* Run only the TestGithubOrgClient test class:
+python -m unittest test_client.TestGithubOrgClient
+
+* Run only the test_has_license method (all parameterized cases):
+python -m unittest test_client.TestGithubOrgClient.test_has_license
+
+```
