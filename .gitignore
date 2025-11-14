@@ -1,6 +1,7 @@
 __pycache__
 *node_modules/
 *.eslintrc*
-*babel*
-*package*
-utils.js
+*package-log.json*
+*babel.config*
+*redis
+*package-lock.json*
