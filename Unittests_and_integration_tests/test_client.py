@@ -2,7 +2,6 @@
 """
 Test client module
 """
-
 import unittest
 from unittest.mock import patch, PropertyMock, Mock
 from parameterized import parameterized_class, parameterized
@@ -36,7 +35,6 @@ class TestGithubOrgClient(unittest.TestCase):
         expected_url = "https://api.github.com/orgs/google/repos"
         payload = {"repos_url": expected_url}
 
-        # Patch the property-like `org` so no real HTTP is called
         with patch.object(GithubOrgClient, "org",
                           new_callable=PropertyMock, return_value=payload):
             client = GithubOrgClient("google")
@@ -46,7 +44,6 @@ class TestGithubOrgClient(unittest.TestCase):
     def test_public_repos(self, mock_get_json):
         """public_repos returns repo names;
         URL property and get_json called once."""
-        # Test GithubOrgClient.public_repos returns the expected list
         payload = [
             {"name": "repo1"},
             {"name": "repo2"},
@@ -66,9 +63,7 @@ class TestGithubOrgClient(unittest.TestCase):
             mock_get_json.assert_called_once_with(mock_url.return_value)
 
     @parameterized.expand([
-        # repo has the correct license -> True
         ({"license": {"key": "my_license"}}, "my_license", True),
-        # repo license is different -> False
         ({"license": {"key": "other_license"}}, "my_license", False),
     ])
     def test_has_license(self, repo, license_key, expected):
@@ -87,17 +82,16 @@ class TestGithubOrgClient(unittest.TestCase):
     }
 ])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
-    """Integration tests for GithubOrgClient.public_repos with fixtures."""
+    """Test class for GithubOrgClient integration."""
 
     @classmethod
     def setUpClass(self):
-        """Start patcher for requests.get and configure its side_effect."""
-        # Patch requests.get where it’s imported (in utils)
+        """Set up class."""
         self.get_patcher = patch("requests.get")
         self.mock_get = self.get_patcher.start()
 
-        # Define mock responses based on URL
         def get_effect(url):
+            """ Get effect"""
             mock_response = Mock()
             if "orgs/google" in url:
                 mock_response.json.return_value = self.org_payload
@@ -106,16 +100,16 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def tearDownClass(self):
-        """Stop the patch for requests.get"""
+        """Tear down class."""
         self.get_patcher.stop()
 
     def test_public_repos(self):
-        """Integration: public_repos returns expected repos from fixtures."""
+        """Test GithubOrgClient.public_repos method."""
         client = GithubOrgClient("google")
         self.assertEqual(client.public_repos(), self.expected_repos)
 
     def test_public_repos_with_license(self):
-        """Integration: public_repos filters repos by license=apache-2.0."""
+        """"Test GithubOrgClient.public_repos method with license."""
         client = GithubOrgClient("google")
         self.assertEqual(
             client.public_repos(license="apache-2.0"),
