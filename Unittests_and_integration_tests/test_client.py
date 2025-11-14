@@ -20,8 +20,7 @@ class TestGithubOrgClient(unittest.TestCase):
     ])
     @patch("client.get_json")
     def test_org(self, org_name, mock_get_json):
-        """org returns mocked payload;
-        get_json called once with the org URL."""
+        """Test org method """
         expected = {"login": org_name}
         mock_get_json.return_value = expected
 
@@ -31,7 +30,7 @@ class TestGithubOrgClient(unittest.TestCase):
             f"https://api.github.com/orgs/{org_name}")
 
     def test_public_repos_url(self):
-        """_public_repos_url returns repos_url from the mocked org payload."""
+        """Test public repos URL"""
         expected_url = "https://api.github.com/orgs/google/repos"
         payload = {"repos_url": expected_url}
 
@@ -42,8 +41,7 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @patch("client.get_json")
     def test_public_repos(self, mock_get_json):
-        """public_repos returns repo names;
-        URL property and get_json called once."""
+        """Test public repos"""
         payload = [
             {"name": "repo1"},
             {"name": "repo2"},
@@ -67,8 +65,7 @@ class TestGithubOrgClient(unittest.TestCase):
         ({"license": {"key": "other_license"}}, "my_license", False),
     ])
     def test_has_license(self, repo, license_key, expected):
-        """has_license returns True only if
-        repo['license']['key'] == license_key."""
+        """Test has license"""
         self.assertEqual(GithubOrgClient.has_license
                          (repo, license_key), expected)
 
